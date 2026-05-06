@@ -44,7 +44,10 @@ On submit, the form data entry for `expiry` will be `YYYY-MM-01` (always the fir
 | Attribute | Description |
 |---|---|
 | `name` | Form field name submitted with the form |
-| `value` | Initial value in `YYYY-MM` or `YYYY-MM-DD` format |
+| `value` | Initial value in `YYYY-MM` or `YYYY-MM-DD` format; defaults to the current month and year |
+| `disabled` | Disables both controls; value is excluded from form submission |
+| `readonly` | Prevents changes; value is still submitted with the form |
+| `required` | Marks the field as required; triggers constraint validation on submit |
 
 ## Public API
 
@@ -80,9 +83,14 @@ month-year-date::part(year) {
 
 ## Accessibility
 
+- The component has `role="group"` so screen readers announce the month and year controls as a single composite field
+- A default `aria-label="Month and year"` labels the group; override it with your own `aria-label` or `aria-labelledby`
 - The month `<select>` has `aria-label="Month"`
 - The year `<input>` has `aria-label="Year"`
-- Both controls use `font: inherit` so they match the surrounding text size
+- Both controls use `font: inherit` so they match the surrounding text size and family
+- `disabled`, `readonly`, and `required` propagate to the internal controls; `required` also sets `aria-required` on each control
+- Constraint validation uses `internals.setValidity()` — the browser reports incomplete or missing values on form submit
+- The component is form-associated and works correctly with `<label>`; `formDisabledCallback` handles disabling via a `<fieldset disabled>` ancestor
 
 ## Development
 

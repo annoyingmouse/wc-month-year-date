@@ -86,7 +86,22 @@
             <td>
               Initial value in <code>YYYY-MM</code> or
               <code>YYYY-MM-DD</code>
-              format
+              format; defaults to the current month and year when omitted
+            </td>
+          </tr>
+          <tr>
+            <td><code>disabled</code></td>
+            <td>Disables both controls; value is excluded from form submission</td>
+          </tr>
+          <tr>
+            <td><code>readonly</code></td>
+            <td>Prevents changes; value is still submitted with the form</td>
+          </tr>
+          <tr>
+            <td><code>required</code></td>
+            <td>
+              Marks the field as required; triggers constraint validation on
+              submit
             </td>
           </tr>
         </tbody>
@@ -112,7 +127,7 @@ console.log(el.form)</code></pre>
 
       <h3>Basic</h3>
 
-      <p>An unstyled component with no initial value:</p>
+      <p>Without a <code>value</code> attribute the component defaults to the current month and year:</p>
 
       <wc-month-year-date name="expiry"></wc-month-year-date>
 
@@ -176,6 +191,65 @@ el.addEventListener('change', () =&gt; {
   console.log(el.value) // e.g. "2026-03-01"
 })</code></pre>
 
+      <h3>Required field</h3>
+
+      <p>
+        Add <code>required</code> to trigger browser constraint validation on
+        form submit. The component reports <code>valueMissing</code> when both
+        fields are empty and <code>badInput</code> when only one field is
+        filled.
+      </p>
+
+      <form id="required-form">
+        <p>
+          <label>
+            Card expiry (required)
+            <wc-month-year-date
+              name="expiry"
+              required
+            ></wc-month-year-date>
+          </label>
+        </p>
+        <p>
+          <button type="submit">Submit</button>
+          <button type="reset">Reset</button>
+        </p>
+      </form>
+
+      <p id="required-output" hidden></p>
+
+      <pre><code>&lt;wc-month-year-date name="expiry" required&gt;&lt;/wc-month-year-date&gt;</code></pre>
+
+      <h3>Disabled</h3>
+
+      <p>
+        Add <code>disabled</code> to prevent interaction. The value is excluded
+        from form submission, matching native form element behaviour.
+      </p>
+
+      <wc-month-year-date
+        name="expiry"
+        value="2027-08"
+        disabled
+      ></wc-month-year-date>
+
+      <pre><code>&lt;wc-month-year-date name="expiry" value="2027-08" disabled&gt;&lt;/wc-month-year-date&gt;</code></pre>
+
+      <h3>Read-only</h3>
+
+      <p>
+        Add <code>readonly</code> to prevent changes while still submitting the
+        value with the form.
+      </p>
+
+      <wc-month-year-date
+        name="expiry"
+        value="2027-08"
+        readonly
+      ></wc-month-year-date>
+
+      <pre><code>&lt;wc-month-year-date name="expiry" value="2027-08" readonly&gt;&lt;/wc-month-year-date&gt;</code></pre>
+
       <h2>Theming</h2>
 
       <p>
@@ -197,6 +271,15 @@ wc-month-year-date::part(year) {
 
       <ul>
         <li>
+          The component has <code>role="group"</code> so screen readers
+          announce the month and year controls as a single composite field
+        </li>
+        <li>
+          A default <code>aria-label="Month and year"</code> labels the group;
+          override it with your own <code>aria-label</code> or
+          <code>aria-labelledby</code>
+        </li>
+        <li>
           The month <code>&lt;select&gt;</code> has
           <code>aria-label="Month"</code>
         </li>
@@ -211,6 +294,17 @@ wc-month-year-date::part(year) {
           The component is form-associated — screen readers announce it as part
           of the form, and it works correctly with <code>&lt;label&gt;</code>
         </li>
+        <li>
+          <code>disabled</code>, <code>readonly</code>, and
+          <code>required</code> propagate to the internal controls;
+          <code>required</code> also sets <code>aria-required</code> on each
+          control
+        </li>
+        <li>
+          Constraint validation uses <code>internals.setValidity()</code> — the
+          browser reports incomplete or missing values on form submit, including
+          partial fills where only one field is filled
+        </li>
       </ul>
     </main>
 
@@ -223,6 +317,16 @@ wc-month-year-date::part(year) {
       const data = new FormData(form);
       output.textContent = `expiry = ${data.get("expiry") ?? "(empty)"}`;
       output.hidden = false;
+    });
+
+    // Required form demo
+    const requiredForm = document.getElementById("required-form");
+    const requiredOutput = document.getElementById("required-output");
+    requiredForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const data = new FormData(requiredForm);
+      requiredOutput.textContent = `expiry = ${data.get("expiry") ?? "(empty)"}`;
+      requiredOutput.hidden = false;
     });
 
     // Live value demo — wait for upgrade before accessing shadowRoot
