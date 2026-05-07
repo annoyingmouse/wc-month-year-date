@@ -11,6 +11,7 @@ class MonthYearDate extends HTMLElement {
     this.attachShadow({ mode: "open" });
     this.setAttribute("role", "group");
     this._formDisabled = false;
+    this._hasWebAwesome = false;
   }
 
   connectedCallback() {
@@ -24,6 +25,38 @@ class MonthYearDate extends HTMLElement {
       this.setAttribute("aria-label", "Month and year");
     }
 
+    this._hasWebAwesome =
+      !!customElements.get("wa-select") && !!customElements.get("wa-input");
+
+    if (this._hasWebAwesome) {
+      this._renderWebAwesome(monthValue, yearValue);
+    } else {
+      this._renderNative(monthValue, yearValue);
+    }
+
+    this._applyStates();
+
+    this.monthInput.addEventListener(
+      this._hasWebAwesome ? "wa-change" : "change",
+      () => this.updateValue(),
+    );
+    this.yearInput.addEventListener(
+      this._hasWebAwesome ? "wa-input" : "input",
+      () => this.updateValue(),
+    );
+
+    this.updateValue();
+  }
+
+  _monthOptions(tag) {
+    return Array.from({ length: 12 }, (_, i) => {
+      const month = String(i + 1).padStart(2, "0");
+      const label = new Date(2000, i).toLocaleString(undefined, { month: "long" });
+      return `<${tag} value="${month}">${label}</${tag}>`;
+    }).join("");
+  }
+
+  _renderNative(monthValue, yearValue) {
     this.shadowRoot.innerHTML = `
       <style>
         :host {
@@ -46,13 +79,7 @@ class MonthYearDate extends HTMLElement {
 
       <select part="month" aria-label="Month">
         <option value="" disabled selected>Month</option>
-        ${Array.from({ length: 12 }, (_, i) => {
-      const month = String(i + 1).padStart(2, "0");
-      const label = new Date(2000, i).toLocaleString(undefined, {
-        month: "long",
-      });
-      return `<option value="${month}">${label}</option>`;
-    }).join("")}
+        ${this._monthOptions("option")}
       </select>
 
       <input
@@ -71,13 +98,45 @@ class MonthYearDate extends HTMLElement {
 
     if (monthValue) this.monthInput.value = monthValue;
     if (yearValue) this.yearInput.value = yearValue;
+  }
 
-    this._applyStates();
+  _renderWebAwesome(monthValue, yearValue) {
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host {
+          display: inline-flex;
+          gap: 0.5rem;
+          align-items: center;
+        }
 
-    this.monthInput.addEventListener("change", () => this.updateValue());
-    this.yearInput.addEventListener("input", () => this.updateValue());
+        wa-input {
+          width: 8rem;
+        }
+      </style>
 
-    this.updateValue();
+      <wa-select
+        part="month"
+        aria-label="Month"
+        placeholder="Month"
+        ${monthValue ? `value="${monthValue}"` : ""}
+      >
+        ${this._monthOptions("wa-option")}
+      </wa-select>
+
+      <wa-input
+        part="year"
+        type="number"
+        min="1"
+        max="9999"
+        step="1"
+        placeholder="Year"
+        aria-label="Year"
+        ${yearValue ? `value="${yearValue}"` : ""}
+      ></wa-input>
+    `;
+
+    this.monthInput = this.shadowRoot.querySelector("wa-select");
+    this.yearInput = this.shadowRoot.querySelector("wa-input");
   }
 
   attributeChangedCallback(name) {
@@ -97,10 +156,18 @@ class MonthYearDate extends HTMLElement {
     const readonly = this.hasAttribute("readonly");
     const required = this.hasAttribute("required");
 
-    // <select> has no readonly; disable it to prevent interaction when readonly
-    this.monthInput.disabled = disabled || readonly;
-    this.yearInput.disabled = disabled;
-    this.yearInput.readOnly = !disabled && readonly;
+    if (this._hasWebAwesome) {
+      // wa-select supports readonly natively; no workaround needed
+      this.monthInput.disabled = disabled;
+      this.yearInput.disabled = disabled;
+      this.monthInput.readonly = readonly;
+      this.yearInput.readonly = !disabled && readonly;
+    } else {
+      // <select> has no readonly; disable it to prevent interaction when readonly
+      this.monthInput.disabled = disabled || readonly;
+      this.yearInput.disabled = disabled;
+      this.yearInput.readOnly = !disabled && readonly;
+    }
 
     if (required) {
       this.monthInput.setAttribute("aria-required", "true");
