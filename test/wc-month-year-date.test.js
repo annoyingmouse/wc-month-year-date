@@ -95,6 +95,47 @@ describe("value attribute", () => {
   });
 });
 
+// ─── default="now" attribute ──────────────────────────────────────────────────
+
+describe('default="now" attribute', () => {
+  it("pre-fills the month with the current month", async () => {
+    const el = await fixture(
+      html`<wc-month-year-date default="now"></wc-month-year-date>`,
+    );
+    const expected = String(new Date().getMonth() + 1).padStart(2, "0");
+    expect(el.shadowRoot.querySelector("select").value).to.equal(expected);
+  });
+
+  it("pre-fills the year with the current year", async () => {
+    const el = await fixture(
+      html`<wc-month-year-date default="now"></wc-month-year-date>`,
+    );
+    expect(el.shadowRoot.querySelector("input").value).to.equal(
+      String(new Date().getFullYear()),
+    );
+  });
+
+  it("sets el.value to the current YYYY-MM-01", async () => {
+    const el = await fixture(
+      html`<wc-month-year-date default="now"></wc-month-year-date>`,
+    );
+    const now = new Date();
+    const year = String(now.getFullYear()).padStart(4, "0");
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    expect(el.value).to.equal(`${year}-${month}-01`);
+  });
+
+  it("value attribute takes precedence over default='now'", async () => {
+    const el = await fixture(
+      html`<wc-month-year-date
+        default="now"
+        value="2020-01"
+      ></wc-month-year-date>`,
+    );
+    expect(el.value).to.equal("2020-01-01");
+  });
+});
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 describe("public API", () => {

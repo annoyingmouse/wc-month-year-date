@@ -86,12 +86,21 @@
             <td>
               Initial value in <code>YYYY-MM</code> or
               <code>YYYY-MM-DD</code>
-              format; defaults to the current month and year when omitted
+              format; both fields start empty when omitted
+            </td>
+          </tr>
+          <tr>
+            <td><code>default</code></td>
+            <td>
+              Set to <code>now</code> to pre-fill both fields with the current
+              month and year when no <code>value</code> attribute is present
             </td>
           </tr>
           <tr>
             <td><code>disabled</code></td>
-            <td>Disables both controls; value is excluded from form submission</td>
+            <td>
+              Disables both controls; value is excluded from form submission
+            </td>
           </tr>
           <tr>
             <td><code>readonly</code></td>
@@ -127,16 +136,31 @@ console.log(el.form)</code></pre>
 
       <h3>Basic</h3>
 
-      <p>Without a <code>value</code> attribute the component defaults to the current month and year:</p>
+      <p>Without a <code>value</code> attribute both fields start empty:</p>
 
       <wc-month-year-date name="expiry"></wc-month-year-date>
 
       <pre
       ><code>&lt;wc-month-year-date name="expiry"&gt;&lt;/wc-month-year-date&gt;</code></pre>
 
+      <h3>Default to current month and year</h3>
+
+      <p>
+        Add <code>default="now"</code> to pre-fill both fields with the current
+        month and year when no <code>value</code> attribute is set:
+      </p>
+
+      <wc-month-year-date name="expiry" default="now"></wc-month-year-date>
+
+      <pre
+      ><code>&lt;wc-month-year-date name="expiry" default="now"&gt;&lt;/wc-month-year-date&gt;</code></pre>
+
       <h3>Pre-filled value</h3>
 
-      <p>Pass <code>value="YYYY-MM"</code> to pre-select a month and year:</p>
+      <p>
+        Pass <code>value="YYYY-MM"</code> to pre-select a specific month and
+        year:
+      </p>
 
       <wc-month-year-date name="dob" value="1990-06"></wc-month-year-date>
 
@@ -204,10 +228,7 @@ el.addEventListener('change', () =&gt; {
         <p>
           <label>
             Card expiry (required)
-            <wc-month-year-date
-              name="expiry"
-              required
-            ></wc-month-year-date>
+            <wc-month-year-date name="expiry" required></wc-month-year-date>
           </label>
         </p>
         <p>
@@ -218,7 +239,8 @@ el.addEventListener('change', () =&gt; {
 
       <p id="required-output" hidden></p>
 
-      <pre><code>&lt;wc-month-year-date name="expiry" required&gt;&lt;/wc-month-year-date&gt;</code></pre>
+      <pre
+      ><code>&lt;wc-month-year-date name="expiry" required&gt;&lt;/wc-month-year-date&gt;</code></pre>
 
       <h3>Disabled</h3>
 
@@ -233,7 +255,8 @@ el.addEventListener('change', () =&gt; {
         disabled
       ></wc-month-year-date>
 
-      <pre><code>&lt;wc-month-year-date name="expiry" value="2027-08" disabled&gt;&lt;/wc-month-year-date&gt;</code></pre>
+      <pre
+      ><code>&lt;wc-month-year-date name="expiry" value="2027-08" disabled&gt;&lt;/wc-month-year-date&gt;</code></pre>
 
       <h3>Read-only</h3>
 
@@ -248,7 +271,8 @@ el.addEventListener('change', () =&gt; {
         readonly
       ></wc-month-year-date>
 
-      <pre><code>&lt;wc-month-year-date name="expiry" value="2027-08" readonly&gt;&lt;/wc-month-year-date&gt;</code></pre>
+      <pre
+      ><code>&lt;wc-month-year-date name="expiry" value="2027-08" readonly&gt;&lt;/wc-month-year-date&gt;</code></pre>
 
       <h2>Theming</h2>
 
@@ -271,8 +295,8 @@ wc-month-year-date::part(year) {
 
       <ul>
         <li>
-          The component has <code>role="group"</code> so screen readers
-          announce the month and year controls as a single composite field
+          The component has <code>role="group"</code> so screen readers announce
+          the month and year controls as a single composite field
         </li>
         <li>
           A default <code>aria-label="Month and year"</code> labels the group;
@@ -296,9 +320,10 @@ wc-month-year-date::part(year) {
         </li>
         <li>
           <code>disabled</code>, <code>readonly</code>, and
-          <code>required</code> propagate to the internal controls;
-          <code>required</code> also sets <code>aria-required</code> on each
-          control
+          <code>required</code>
+          propagate to the internal controls;
+          <code>required</code>
+          also sets <code>aria-required</code> on each control
         </li>
         <li>
           Constraint validation uses <code>internals.setValidity()</code> — the

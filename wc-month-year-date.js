@@ -15,13 +15,25 @@ class MonthYearDate extends HTMLElement {
   }
 
   connectedCallback() {
-    const now = new Date();
     const raw = this.getAttribute("value");
-    const [yearValue, monthValue] = raw
-      ? raw.split("-")
-      : [String(now.getFullYear()), String(now.getMonth() + 1).padStart(2, "0")];
+    const dflt = this.getAttribute("default");
 
-    if (!this.hasAttribute("aria-label") && !this.hasAttribute("aria-labelledby")) {
+    let yearValue, monthValue;
+    if (raw) {
+      [yearValue, monthValue] = raw.split("-");
+    } else if (dflt === "now") {
+      const now = new Date();
+      yearValue = String(now.getFullYear());
+      monthValue = String(now.getMonth() + 1).padStart(2, "0");
+    } else {
+      yearValue = null;
+      monthValue = null;
+    }
+
+    if (
+      !this.hasAttribute("aria-label") &&
+      !this.hasAttribute("aria-labelledby")
+    ) {
       this.setAttribute("aria-label", "Month and year");
     }
 
@@ -51,7 +63,9 @@ class MonthYearDate extends HTMLElement {
   _monthOptions(tag) {
     return Array.from({ length: 12 }, (_, i) => {
       const month = String(i + 1).padStart(2, "0");
-      const label = new Date(2000, i).toLocaleString(undefined, { month: "long" });
+      const label = new Date(2000, i).toLocaleString(undefined, {
+        month: "long",
+      });
       return `<${tag} value="${month}">${label}</${tag}>`;
     }).join("");
   }
@@ -204,7 +218,7 @@ class MonthYearDate extends HTMLElement {
         this.internals.setValidity(
           { badInput: true },
           "Please complete both the month and the year",
-          !month ? this.monthInput : this.yearInput,
+          month ? this.yearInput : this.monthInput,
         );
       }
     }

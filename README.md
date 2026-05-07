@@ -44,7 +44,8 @@ On submit, the form data entry for `expiry` will be `YYYY-MM-01` (always the fir
 | Attribute | Description |
 |---|---|
 | `name` | Form field name submitted with the form |
-| `value` | Initial value in `YYYY-MM` or `YYYY-MM-DD` format; defaults to the current month and year |
+| `value` | Initial value in `YYYY-MM` or `YYYY-MM-DD` format; both fields start empty when omitted |
+| `default` | Set to `now` to pre-fill both fields with the current month and year when no `value` is present |
 | `disabled` | Disables both controls; value is excluded from form submission |
 | `readonly` | Prevents changes; value is still submitted with the form |
 | `required` | Marks the field as required; triggers constraint validation on submit |
