@@ -36,6 +36,9 @@
     "url": "https://github.com/annoyingmouse/wc-month-year-date/issues"
   },
   "homepage": "https://github.com/annoyingmouse/wc-month-year-date#readme",
+  "np": {
+    "cleanup": false
+  },
   "prettier": {
     "singleQuote": true,
     "semi": false
