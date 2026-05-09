@@ -4,6 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>&lt;wc-month-year-date&gt;</title>
+    <!-- Theme + color palette -->
+    <link
+      rel="stylesheet"
+      href="https://ka-p.webawesome.com/kit/1feb7579f328454c/webawesome@3.5.0/styles/themes/default.css"
+    >
+
+    <!-- Native styles/CSS reset -->
+    <link
+      rel="stylesheet"
+      href="https://ka-p.webawesome.com/kit/1feb7579f328454c/webawesome@3.5.0/styles/native.css"
+    >
+
+    <!-- CSS utilities -->
+    <link
+      rel="stylesheet"
+      href="https://ka-p.webawesome.com/kit/1feb7579f328454c/webawesome@3.5.0/styles/utilities.css"
+    >
+
+    <!-- Web Awesome autoloader -->
+    <script
+      type="module"
+      src="https://ka-p.webawesome.com/kit/1feb7579f328454c/webawesome@3.5.0/webawesome.loader.js"
+    ></script>
 
     <link
       rel="stylesheet"
@@ -138,7 +161,10 @@ console.log(el.form)</code></pre>
 
       <p>Without a <code>value</code> attribute both fields start empty:</p>
 
-      <wc-month-year-date name="expiry"></wc-month-year-date>
+      <wc-month-year-date
+        name="expiry"
+        label="Planted when"
+      ></wc-month-year-date>
 
       <pre
       ><code>&lt;wc-month-year-date name="expiry"&gt;&lt;/wc-month-year-date&gt;</code></pre>
@@ -354,19 +380,24 @@ wc-month-year-date::part(year) {
       requiredOutput.hidden = false;
     });
 
-    // Live value demo — wait for upgrade before accessing shadowRoot
+    // Live value demo — wait for the component AND Web Awesome elements to be
+    // defined; connectedCallback is async and only renders after WA is ready
     await customElements.whenDefined("wc-month-year-date");
+    await Promise.all([
+      customElements.whenDefined("wa-select"),
+      customElements.whenDefined("wa-input"),
+    ]);
     const jsDemoEl = document.getElementById("js-demo");
     const jsOutput = document.getElementById("js-output");
-    const update = (_e) => {
+    const update = () => {
       jsOutput.textContent = jsDemoEl.value || "(none)";
     };
     jsDemoEl.shadowRoot
-      .querySelector("select")
-      .addEventListener("change", update);
+      .querySelector("wa-select")
+      .addEventListener("wa-change", update);
     jsDemoEl.shadowRoot
-      .querySelector("input")
-      .addEventListener("input", update);
+      .querySelector("wa-input")
+      .addEventListener("wa-input", update);
     </script>
   </body>
 </html>

@@ -118,13 +118,18 @@ class MonthYearDate extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <style>
         :host {
-          display: inline-flex;
+          display: flex;
           gap: 0.5rem;
           align-items: center;
         }
-
+      
+        wa-select {
+          flex: 2;
+        }
+      
         wa-input {
-          width: 8rem;
+          flex: 1;
+          min-width: 0;
         }
       </style>
 
