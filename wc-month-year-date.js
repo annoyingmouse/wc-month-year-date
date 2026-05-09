@@ -2,7 +2,7 @@ class MonthYearDate extends HTMLElement {
   static formAssociated = true;
 
   static get observedAttributes() {
-    return ["disabled", "readonly", "required"];
+    return ["disabled", "readonly", "required", "label"];
   }
 
   constructor() {
@@ -71,6 +71,7 @@ class MonthYearDate extends HTMLElement {
   }
 
   _renderNative(monthValue, yearValue) {
+    const labelText = this.getAttribute("label");
     this.shadowRoot.innerHTML = `
       <style>
         :host {
@@ -91,7 +92,9 @@ class MonthYearDate extends HTMLElement {
         }
       </style>
 
-      <select part="month" aria-label="Month">
+      <label part="label form-control-label" for="month" ${labelText ? "" : "hidden"}></label>
+
+      <select id="month" part="month" aria-label="Month">
         <option value="" disabled selected>Month</option>
         ${this._monthOptions("option")}
       </select>
@@ -107,6 +110,9 @@ class MonthYearDate extends HTMLElement {
       >
     `;
 
+    this.labelEl = this.shadowRoot.querySelector("label");
+    if (labelText) this.labelEl.textContent = labelText;
+
     this.monthInput = this.shadowRoot.querySelector("select");
     this.yearInput = this.shadowRoot.querySelector("input");
 
@@ -115,6 +121,7 @@ class MonthYearDate extends HTMLElement {
   }
 
   _renderWebAwesome(monthValue, yearValue) {
+    const labelText = this.getAttribute("label");
     this.shadowRoot.innerHTML = `
       <style>
         :host {
@@ -122,16 +129,18 @@ class MonthYearDate extends HTMLElement {
           gap: 0.5rem;
           align-items: center;
         }
-      
+
         wa-select {
           flex: 2;
         }
-      
+
         wa-input {
           flex: 1;
           min-width: 0;
         }
       </style>
+
+      <label part="label form-control-label" ${labelText ? "" : "hidden"}></label>
 
       <wa-select
         part="month"
@@ -154,12 +163,22 @@ class MonthYearDate extends HTMLElement {
       ></wa-input>
     `;
 
+    this.labelEl = this.shadowRoot.querySelector("label");
+    if (labelText) this.labelEl.textContent = labelText;
+    this.labelEl.addEventListener("click", () => this.monthInput.focus());
+
     this.monthInput = this.shadowRoot.querySelector("wa-select");
     this.yearInput = this.shadowRoot.querySelector("wa-input");
   }
 
   attributeChangedCallback(name) {
     if (!this.monthInput) return;
+    if (name === "label") {
+      const text = this.getAttribute("label");
+      this.labelEl.textContent = text || "";
+      this.labelEl.hidden = !text;
+      return;
+    }
     this._applyStates();
     if (name === "required") this.updateValue();
   }
