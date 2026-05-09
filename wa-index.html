@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>&lt;wc-month-year-date&gt;</title>
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/sakura.css/css/sakura.css"
+      type="text/css"
+    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    >
+
+    <script src="./wc-month-year-date.js" type="module"></script>
+
+    <style>
+    body {
+      font-family: "Figtree", sans-serif;
+      margin-bottom: 10rem;
+    }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: "Figtree", sans-serif;
+    }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>&lt;wc-month-year-date&gt;</h1>
+
+      <p>
+        <a
+          href="https://www.webcomponents.org/element/@annoyingmouse/wc-month-year-date"
+        >
+          <img
+            src="https://img.shields.io/badge/webcomponents.org-published-blue.svg"
+            alt="Published on webcomponents.org"
+          >
+        </a>
+      </p>
+
+      <p>
+        A form-associated web component for selecting a month and year. Renders
+        a localised month <code>&lt;select&gt;</code> and a year
+        <code>&lt;input type="number"&gt;</code>
+        that participate in HTML forms natively via the ElementInternals API. No
+        framework dependencies.
+      </p>
+
+      <h2>Installation</h2>
+
+      <pre
+      ><code>&lt;script src="https://unpkg.com/@annoyingmouse/wc-month-year-date/wc-month-year-date.js" defer&gt;&lt;/script&gt;</code></pre>
+
+      <p>Or as a module:</p>
+
+      <pre
+      ><code>&lt;script type="module" src="https://cdn.skypack.dev/@annoyingmouse/wc-month-year-date/wc-month-year-date.js"&gt;&lt;/script&gt;</code></pre>
+
+      <h2>Attributes</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>name</code></td>
+            <td>Form field name submitted with the form</td>
+          </tr>
+          <tr>
+            <td><code>value</code></td>
+            <td>
+              Initial value in <code>YYYY-MM</code> or
+              <code>YYYY-MM-DD</code>
+              format; both fields start empty when omitted
+            </td>
+          </tr>
+          <tr>
+            <td><code>default</code></td>
+            <td>
+              Set to <code>now</code> to pre-fill both fields with the current
+              month and year when no <code>value</code> attribute is present
+            </td>
+          </tr>
+          <tr>
+            <td><code>disabled</code></td>
+            <td>
+              Disables both controls; value is excluded from form submission
+            </td>
+          </tr>
+          <tr>
+            <td><code>readonly</code></td>
+            <td>Prevents changes; value is still submitted with the form</td>
+          </tr>
+          <tr>
+            <td><code>required</code></td>
+            <td>
+              Marks the field as required; triggers constraint validation on
+              submit
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Public API</h2>
+
+      <pre><code>const el = document.querySelector('wc-month-year-date')
+
+// Read current value (YYYY-MM-01, or "" when incomplete)
+console.log(el.value)
+
+// Read form field name
+console.log(el.name)
+
+// Always "month-year-date"
+console.log(el.type)
+
+// The associated &lt;form&gt; element (null if not inside a form)
+console.log(el.form)</code></pre>
+
+      <h2>Examples</h2>
+
+      <h3>Basic</h3>
+
+      <p>Without a <code>value</code> attribute both fields start empty:</p>
+
+      <wc-month-year-date name="expiry"></wc-month-year-date>
+
+      <pre
+      ><code>&lt;wc-month-year-date name="expiry"&gt;&lt;/wc-month-year-date&gt;</code></pre>
+
+      <h3>Default to current month and year</h3>
+
+      <p>
+        Add <code>default="now"</code> to pre-fill both fields with the current
+        month and year when no <code>value</code> attribute is set:
+      </p>
+
+      <wc-month-year-date name="expiry" default="now"></wc-month-year-date>
+
+      <pre
+      ><code>&lt;wc-month-year-date name="expiry" default="now"&gt;&lt;/wc-month-year-date&gt;</code></pre>
+
+      <h3>Pre-filled value</h3>
+
+      <p>
+        Pass <code>value="YYYY-MM"</code> to pre-select a specific month and
+        year:
+      </p>
+
+      <wc-month-year-date name="dob" value="1990-06"></wc-month-year-date>
+
+      <pre
+      ><code>&lt;wc-month-year-date name="dob" value="1990-06"&gt;&lt;/wc-month-year-date&gt;</code></pre>
+
+      <h3>Inside a form</h3>
+
+      <p>
+        The component participates in form submission natively. On submit, the
+        data entry is <code>YYYY-MM-01</code> (always the first of the month),
+        or absent when either field is empty.
+      </p>
+
+      <form id="demo-form">
+        <p>
+          <label>
+            Card expiry
+            <wc-month-year-date
+              name="expiry"
+              value="2027-08"
+            ></wc-month-year-date>
+          </label>
+        </p>
+        <p>
+          <button type="submit">Submit</button>
+          <button type="reset">Reset</button>
+        </p>
+      </form>
+
+      <p id="form-output" hidden></p>
+
+      <pre><code>&lt;form&gt;
+  &lt;wc-month-year-date name="expiry" value="2027-08"&gt;&lt;/wc-month-year-date&gt;
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+      <h3>Reading the value via JavaScript</h3>
+
+      <p>
+        The <code>value</code> property always reflects the current selection as
+        <code>YYYY-MM-01</code>, or an empty string when either field is
+        incomplete.
+      </p>
+
+      <wc-month-year-date id="js-demo" name="demo"></wc-month-year-date>
+
+      <p>Current value: <code id="js-output">(none)</code></p>
+
+      <pre><code>const el = document.querySelector('#js-demo')
+el.addEventListener('change', () =&gt; {
+  console.log(el.value) // e.g. "2026-03-01"
+})</code></pre>
+
+      <h3>Required field</h3>
+
+      <p>
+        Add <code>required</code> to trigger browser constraint validation on
+        form submit. The component reports <code>valueMissing</code> when both
+        fields are empty and <code>badInput</code> when only one field is
+        filled.
+      </p>
+
+      <form id="required-form">
+        <p>
+          <label>
+            Card expiry (required)
+            <wc-month-year-date name="expiry" required></wc-month-year-date>
+          </label>
+        </p>
+        <p>
+          <button type="submit">Submit</button>
+          <button type="reset">Reset</button>
+        </p>
+      </form>
+
+      <p id="required-output" hidden></p>
+
+      <pre
+      ><code>&lt;wc-month-year-date name="expiry" required&gt;&lt;/wc-month-year-date&gt;</code></pre>
+
+      <h3>Disabled</h3>
+
+      <p>
+        Add <code>disabled</code> to prevent interaction. The value is excluded
+        from form submission, matching native form element behaviour.
+      </p>
+
+      <wc-month-year-date
+        name="expiry"
+        value="2027-08"
+        disabled
+      ></wc-month-year-date>
+
+      <pre
+      ><code>&lt;wc-month-year-date name="expiry" value="2027-08" disabled&gt;&lt;/wc-month-year-date&gt;</code></pre>
+
+      <h3>Read-only</h3>
+
+      <p>
+        Add <code>readonly</code> to prevent changes while still submitting the
+        value with the form.
+      </p>
+
+      <wc-month-year-date
+        name="expiry"
+        value="2027-08"
+        readonly
+      ></wc-month-year-date>
+
+      <pre
+      ><code>&lt;wc-month-year-date name="expiry" value="2027-08" readonly&gt;&lt;/wc-month-year-date&gt;</code></pre>
+
+      <h2>Theming</h2>
+
+      <p>
+        The <code>select</code> and <code>input</code> are exposed as CSS
+        <code>::part()</code>
+        targets named <code>month</code> and
+        <code>year</code>:
+      </p>
+
+      <pre><code>wc-month-year-date::part(month) {
+  border-radius: 4px;
+}
+
+wc-month-year-date::part(year) {
+  width: 6rem;
+}</code></pre>
+
+      <h2>Accessibility</h2>
+
+      <ul>
+        <li>
+          The component has <code>role="group"</code> so screen readers announce
+          the month and year controls as a single composite field
+        </li>
+        <li>
+          A default <code>aria-label="Month and year"</code> labels the group;
+          override it with your own <code>aria-label</code> or
+          <code>aria-labelledby</code>
+        </li>
+        <li>
+          The month <code>&lt;select&gt;</code> has
+          <code>aria-label="Month"</code>
+        </li>
+        <li>
+          The year <code>&lt;input&gt;</code> has <code>aria-label="Year"</code>
+        </li>
+        <li>
+          Both controls use <code>font: inherit</code> so they match the
+          surrounding text size and family
+        </li>
+        <li>
+          The component is form-associated — screen readers announce it as part
+          of the form, and it works correctly with <code>&lt;label&gt;</code>
+        </li>
+        <li>
+          <code>disabled</code>, <code>readonly</code>, and
+          <code>required</code>
+          propagate to the internal controls;
+          <code>required</code>
+          also sets <code>aria-required</code> on each control
+        </li>
+        <li>
+          Constraint validation uses <code>internals.setValidity()</code> — the
+          browser reports incomplete or missing values on form submit, including
+          partial fills where only one field is filled
+        </li>
+      </ul>
+    </main>
+
+    <script type="module">
+    // Form submit demo
+    const form = document.getElementById("demo-form");
+    const output = document.getElementById("form-output");
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      output.textContent = `expiry = ${data.get("expiry") ?? "(empty)"}`;
+      output.hidden = false;
+    });
+
+    // Required form demo
+    const requiredForm = document.getElementById("required-form");
+    const requiredOutput = document.getElementById("required-output");
+    requiredForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const data = new FormData(requiredForm);
+      requiredOutput.textContent = `expiry = ${data.get("expiry") ?? "(empty)"}`;
+      requiredOutput.hidden = false;
+    });
+
+    // Live value demo — wait for upgrade before accessing shadowRoot
+    await customElements.whenDefined("wc-month-year-date");
+    const jsDemoEl = document.getElementById("js-demo");
+    const jsOutput = document.getElementById("js-output");
+    const update = (_e) => {
+      jsOutput.textContent = jsDemoEl.value || "(none)";
+    };
+    jsDemoEl.shadowRoot
+      .querySelector("select")
+      .addEventListener("change", update);
+    jsDemoEl.shadowRoot
+      .querySelector("input")
+      .addEventListener("input", update);
+    </script>
+  </body>
+</html>
