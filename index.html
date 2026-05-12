@@ -52,7 +52,7 @@
       <p>
         A form-associated web component for selecting a month and year. Renders
         a localised month <code>&lt;select&gt;</code> and a year
-        <code>&lt;input type="number"&gt;</code>
+        <code>&lt;input&gt;</code>
         that participate in HTML forms natively via the ElementInternals API. No
         framework dependencies.
       </p>
@@ -111,6 +111,21 @@
             <td>
               Marks the field as required; triggers constraint validation on
               submit
+            </td>
+          </tr>
+          <tr>
+            <td><code>label</code></td>
+            <td>
+              Visible label rendered inside the component; clicking it focuses
+              the month control
+            </td>
+          </tr>
+          <tr>
+            <td><code>autocomplete</code></td>
+            <td>
+              Autocomplete hint forwarded to the internal controls;
+              <code>cc-exp</code> and <code>bday</code> are automatically split
+              into their <code>-month</code> / <code>-year</code> tokens
             </td>
           </tr>
         </tbody>
@@ -274,6 +289,22 @@ el.addEventListener('change', () =&gt; {
       <pre
       ><code>&lt;wc-month-year-date name="expiry" value="2027-08" readonly&gt;&lt;/wc-month-year-date&gt;</code></pre>
 
+      <h3>Autocomplete</h3>
+
+      <p>
+        Use <code>autocomplete="cc-exp"</code> on a card expiry field or
+        <code>autocomplete="bday"</code> on a date of birth field. The component
+        automatically forwards <code>cc-exp-month</code> /
+        <code>cc-exp-year</code> (or <code>bday-month</code> /
+        <code>bday-year</code>) to the internal controls so password managers
+        and autofill work correctly.
+      </p>
+
+      <wc-month-year-date name="expiry" autocomplete="cc-exp"></wc-month-year-date>
+
+      <pre
+      ><code>&lt;wc-month-year-date name="expiry" autocomplete="cc-exp"&gt;&lt;/wc-month-year-date&gt;</code></pre>
+
       <h2>Theming</h2>
 
       <p>
@@ -304,11 +335,20 @@ wc-month-year-date::part(year) {
           <code>aria-labelledby</code>
         </li>
         <li>
-          The month <code>&lt;select&gt;</code> has
-          <code>aria-label="Month"</code>
+          Each control has a visually-hidden <code>&lt;label&gt;</code> associated
+          via <code>for</code>/<code>id</code> so screen readers announce
+          "Month" and "Year" individually
         </li>
         <li>
-          The year <code>&lt;input&gt;</code> has <code>aria-label="Year"</code>
+          The year field uses <code>type="text"</code> with
+          <code>inputmode="numeric"</code> — keyboards on mobile show digits
+          while desktop screen readers are not burdened with spin-button
+          announcements
+        </li>
+        <li>
+          After the user first interacts, <code>aria-invalid</code> is set on
+          the relevant control(s) and an <code>aria-live="polite"</code> region
+          announces the validation message without interrupting the user
         </li>
         <li>
           Both controls use <code>font: inherit</code> so they match the
@@ -326,9 +366,15 @@ wc-month-year-date::part(year) {
           also sets <code>aria-required</code> on each control
         </li>
         <li>
-          Constraint validation uses <code>internals.setValidity()</code> — the
-          browser reports incomplete or missing values on form submit, including
-          partial fills where only one field is filled
+          <code>autocomplete</code> is forwarded to the internal controls;
+          <code>cc-exp</code> and <code>bday</code> are split into their
+          <code>-month</code> / <code>-year</code> tokens automatically
+          (WCAG 1.3.5 — Identify Input Purpose)
+        </li>
+        <li>
+          Constraint validation uses <code>internals.setValidity()</code> and
+          <code>formResetCallback</code> restores the initial value and clears
+          error state when the form is reset
         </li>
       </ul>
     </main>
@@ -354,19 +400,16 @@ wc-month-year-date::part(year) {
       requiredOutput.hidden = false;
     });
 
-    // Live value demo — wait for upgrade before accessing shadowRoot
-    await customElements.whenDefined("wc-month-year-date");
+    // Live value demo — watch the value attribute on the host element directly
+    // so there's no dependency on shadow DOM timing or render path
     const jsDemoEl = document.getElementById("js-demo");
     const jsOutput = document.getElementById("js-output");
-    const update = (_e) => {
+    const update = () => {
       jsOutput.textContent = jsDemoEl.value || "(none)";
     };
-    jsDemoEl.shadowRoot
-      .querySelector("select")
-      .addEventListener("change", update);
-    jsDemoEl.shadowRoot
-      .querySelector("input")
-      .addEventListener("input", update);
+    new MutationObserver(update).observe(jsDemoEl, {
+      attributeFilter: ["value"],
+    });
     </script>
   </body>
 </html>
