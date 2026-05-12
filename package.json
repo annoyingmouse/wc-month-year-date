@@ -1,6 +1,6 @@
 {
   "name": "@annoyingmouse/wc-month-year-date",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "A form-associated web component for selecting a month and year.",
   "main": "wc-month-year-date.js",
   "type": "module",
